@@ -208,7 +208,6 @@ def install_scripts(install_root):
 # Function prototype: def f(layout, debug, profile) :: dict -> bool -> dict
 #
 
-
 def build_icu(layout, debug, profile):
     # NOTE: We always build ICU in release mode since we don't usually need to debug it.
     os.chdir('source')
@@ -236,6 +235,31 @@ def build_icu(layout, debug, profile):
         sdk.sh('bash', '-c', 'make install')
     else:
         sdk.die('You have to rebuild ICU only on OS X or Windows')
+
+
+def install_qt_requirements():
+    def is_ubuntu():
+        if os.path.exists("/etc/lsb-release"):
+            with open("/etc/lsb-release") as f:
+                for line in f:
+                    if line.startswith("DISTRIB_ID"):
+                        return "Ubuntu" in line
+        return False
+    if is_ubuntu():
+        sdk.sh("sudo", "apt-get", "install",
+               "libfontconfig1-dev",
+               "libfreetype6-dev",
+               "libx11-dev",
+               "libxcursor-dev",
+               "libxext-dev",
+               "libxfixes-dev",
+               "libxft-dev",
+               "libxi-dev",
+               "libxrandr-dev",
+               "libxrender-dev",
+               "libgl1-mesa-dev",
+               "libglu1-mesa-dev",
+               "libcups2-dev")
 
 
 def build_qt(layout, debug, profile):
@@ -313,6 +337,9 @@ def build_qt(layout, debug, profile):
     # Build Qt 4 with clang on OS X
     if sys.platform == 'darwin' and os.path.isfile('/usr/bin/clang') and not is_qt5():
         qt_configure_args.extend(['-platform', 'unsupported/macx-clang'])
+
+    # Install build requirements (Ubuntu only)
+    install_qt_requirements()
 
     # Build
     configure_qt(*qt_configure_args)
