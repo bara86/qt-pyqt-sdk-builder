@@ -380,12 +380,10 @@ def build_pyqt(layout, debug, profile):
         '--concatenate-split=4',
         '--confirm-license',
         '--destdir', layout['python'],
-        '--no-designer-plugin',
         '--no-docstrings',
-        '--no-sip-files',
-        '--sip=%s' % os.path.join(layout['bin'], 'sip.exe' if sys.platform == 'win32' else 'sip'),
+        '--sip', layout['sip'],
         '--verbose',
-    ]
+    ] + profile['pyqt']['common']
 
     set_pyqt_debug_flags(debug, configure_args)
 
