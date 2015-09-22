@@ -266,12 +266,17 @@ def install_qt_requirements():
 def build_qt(layout, debug, profile):
 
     def qtmake(*args):
-        try:
-            sdk.sh('jom', '/VERSION')
-        except:
+        if sys.platform == 'win32':
             make(*args)
         else:
-            sdk.sh('jom', '-j%s' % str(multiprocessing.cpu_count() + 1), *args)
+            try:
+                sdk.sh('jom', '/VERSION')
+            except:
+                make(*args)
+            else:
+                sdk.sh('jom', '-j%s' % str(multiprocessing.cpu_count() + 1), *args)
+
+    if os.path.isfile(QT_LICENSE_FILE):
 
     if os.path.isfile(QT_LICENSE_FILE):
         qt_license = '-commercial'
@@ -384,11 +389,27 @@ def build_pyqt(layout, debug, profile):
         '--sip', layout['sip'],
         '--verbose',
     ] + profile['pyqt']['common']
-
+ 
+    # Configure-ng
+    configure_ng_args = [
+        '--assume-shared',
+        '--bindir', layout['bin'],
+        '--concatenate',
+        '--concatenate-split=4',
+        '--confirm-license',
+        '--destdir', layout['python'],
+        '--no-docstrings',
+        # --sip 
+        '--sip', os.path.join(layout['bin'], 'sip.exe'),
+        '--verbose',
+    ] + profile['pyqt']['common']
+ 
     set_pyqt_debug_flags(debug, configure_args)
+    set_pyqt_debug_flags(debug, configure_ng_args)
 
     # Build
-    configure(*configure_args)
+    # configure(*configure_args)
+    configure_ng(*configure_ng_args)
     make()
     make('install')
 
@@ -403,6 +424,10 @@ def is_qt5():
 
 def configure(*args):
     sdk.sh(sys.executable, 'configure.py', *args)
+
+
+def configure_ng(*args):
+    sdk.sh(sys.executable, 'configure-ng.py', *args)
 
 
 def configure_qt(*args):
