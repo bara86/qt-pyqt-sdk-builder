@@ -277,8 +277,6 @@ def build_qt(layout, debug, profile):
                 sdk.sh('jom', '-j%s' % str(multiprocessing.cpu_count() + 1), *args)
 
     if os.path.isfile(QT_LICENSE_FILE):
-
-    if os.path.isfile(QT_LICENSE_FILE):
         qt_license = '-commercial'
 
         shutil.copy(QT_LICENSE_FILE, os.path.join(HOME, ".qt-license"))
