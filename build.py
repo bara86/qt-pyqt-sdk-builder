@@ -397,8 +397,7 @@ def build_pyqt(layout, debug, profile):
         '--confirm-license',
         '--destdir', layout['python'],
         '--no-docstrings',
-        # --sip 
-        '--sip', os.path.join(layout['bin'], 'sip.exe'),
+        '--sip', os.path.join(layout['bin'], 'sip'),
         '--verbose',
     ] + profile['pyqt']['common']
  
