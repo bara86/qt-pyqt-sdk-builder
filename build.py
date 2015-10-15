@@ -398,6 +398,7 @@ def build_pyqt(layout, debug, profile):
         '--destdir', layout['python'],
         '--no-docstrings',
         '--sip', os.path.join(layout['bin'], 'sip'),
+        '--sipdir', layout['sip'],
         '--verbose',
     ] + profile['pyqt']['common']
  
